@@ -1,6 +1,6 @@
 pragma solidity >=0.7.0 <0.9.0;
 
-contract asticot_lottery {
+contract Loterie {
     /* 
     Here's how it works:
         - N participants contribute 1 eth each via the `participate()` function
