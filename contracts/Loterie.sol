@@ -1,6 +1,8 @@
 pragma solidity >=0.7.0 <0.9.0;
 
-contract Loterie {
+import "./Ownable.sol";
+
+contract Loterie is Ownable {
     /* 
     Here's how it works:
         - N participants contribute 1 eth each via the `participate()` function
