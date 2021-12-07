@@ -8,7 +8,7 @@ contract Loterie {
         - In the next block, the winner can call the `collect()` function to get his winnings.
     */
 
-    uint256 constant participationFee = 10000000000000000; // = 0.01 eth
+    uint256 constant PARTICIPATION_FEE = 10000000000000000; // = 0.01 eth
 
     enum LState {
         Open,
@@ -24,7 +24,7 @@ contract Loterie {
 
     function participate() public payable {
         require(lotteryState == LState.Open);
-        require(msg.value >= participationFee);
+        require(msg.value >= PARTICIPATION_FEE);
         participantList.push(msg.sender);
     }
 
@@ -56,12 +56,12 @@ contract Loterie {
         return lotteryState;
     }
 
-    function get_bloc_lock() public view returns (uint256) {
+    function getBlocLock() public view returns (uint256) {
         require(lotteryState == LState.Locked);
         return lockBlock;
     }
 
-    function get_nb_participants() public view returns (uint256) {
+    function getNbParticipants() public view returns (uint256) {
         return participantList.length;
     }
     
