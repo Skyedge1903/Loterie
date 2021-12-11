@@ -4,6 +4,6 @@ module.exports = function(deployer) {
 };
 
 const Loterie = artifacts.require("Loterie");
-module.exports = function(deployer){
+module.exports = function(deployer) {
   deployer.deploy(Loterie);
-}
+};
