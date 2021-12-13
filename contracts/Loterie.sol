@@ -1,6 +1,8 @@
 pragma solidity >=0.7.0 <0.9.0;
 
-contract Loterie {
+import "./Ownable.sol";
+
+contract Loterie is Ownable {
     /* 
     Here's how it works:
         - N participants contribute 1 eth each via the `participate()` function
@@ -41,27 +43,27 @@ contract Loterie {
 
         lotteryState = LState.Open;
         
-        payable(winner()).transfer(address(this).balance);
+        payable(getWinner()).transfer(address(this).balance);
         delete lockBlock;
         delete participantList;
     }
 
 
     // getters
-    function winner() public view returns (address) {
+    function getWinner() public view returns (address) {
         return participantList[uint256(blockhash(lockBlock+1)) % participantList.length];
     }
     
-    function status() public view returns (LState) {
+    function getState() public view returns (LState) {
         return lotteryState;
     }
 
-    function getBlocLock() public view returns (uint256) {
+    function getLockBlock() public view returns (uint256) {
         require(lotteryState == LState.Locked);
         return lockBlock;
     }
 
-    function getNbParticipants() public view returns (uint256) {
+    function getParticipantCount() public view returns (uint256) {
         return participantList.length;
     }
     
