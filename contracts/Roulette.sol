@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity >=0.8.0 <0.9.0;
 
 
 contract Roulette {
@@ -54,11 +54,15 @@ contract Roulette {
         return (get_winning_number(id) == b[id].number, b[id].value * 18);
     }
 
+    function test() public view returns(uint256) {
+        return 42;
+    }
+
     function calculate_winnings() public view returns(uint256) {
         Bid[] memory b = bids[msg.sender];
         uint256 winnings = 0;
         for (uint i = 0; i < b.length; i++) {
-            if(b[i].block_number > block.number) {
+            if(get_block_number(i) < block.number) {
                 if(get_winning_number(i) == b[i].number) {
                     winnings += b[i].value * 18;
                 }

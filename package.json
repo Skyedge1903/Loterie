@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@drizzle/store": "^1.5.3",
+    "eth-lib": "^0.1.29",
+    "stream-browserify": "^3.0.0"
+  }
+}
