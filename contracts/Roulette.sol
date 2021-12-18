@@ -5,8 +5,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 contract Roulette {
 
-    // Roulettes go from 0 to 36 included
-    uint8 constant biggest_number = 36;
+    uint8 constant biggest_number = 10;
 
     modifier is_valid_number(uint8 nb) {
         require(nb <= biggest_number, "The number is not a valid Roulette number");
@@ -39,6 +38,7 @@ contract Roulette {
         emit BidCreated(msg.sender, msg.value, block.number, roulette_number, bids[msg.sender].length - 1);
     }
 
+
     function get_block_number(uint256 id) public view returns(uint256) {
         return bids[msg.sender][id].block_number;
     }
@@ -51,20 +51,25 @@ contract Roulette {
     function won(uint256 id) public view returns(bool, uint256) {
         Bid[] memory b = bids[msg.sender];
         require(id < b.length, "Incorrect id");
-        return (get_winning_number(id) == b[id].number, b[id].value * 18);
+        return (get_winning_number(id) == b[id].number, b[id].value * 5);
     }
 
     function calculate_winnings() public view returns(uint256) {
         Bid[] memory b = bids[msg.sender];
         uint256 winnings = 0;
         for (uint i = 0; i < b.length; i++) {
-            if(b[i].block_number > block.number) {
-                if(get_winning_number(i) == b[i].number) {
-                    winnings += b[i].value * 18;
+            if(b[i].block_number < block.number) {
+                (bool w, uint256 a) = won(i);
+                if(w){
+                    winnings += a;
                 }
             }
         }
         return winnings;
+    }
+
+    function get_bids() public view returns(Bid[] memory) {
+        return bids[msg.sender];
     }
 
     function get_winnings() public {
