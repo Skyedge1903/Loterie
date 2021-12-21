@@ -25,11 +25,12 @@ contract("Loterie2", accounts => {
   it('Creating a lottery should emit an event', async () => {
     await advanceBlock()
     let current_block = (await web3.eth.getBlock("latest")).number
-    let eth = web3.utils.toWei("0.000001", 'ether');
+    let eth = web3.utils.toWei("1", 'ether');
+    let receipt = await contract.create_lottery(eth, 20, {from: accounts[0]})
 
-    await contract.create_lottery(0.0001, 10, {from: accounts[0]})
-
-
+    let l = receipt.logs[0];
+    assert.equal(l.event, 'LotteryCreated');
+    assert.equal(l.args.index, 0);
   });
 
 });
