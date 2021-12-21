@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 
-import "./Ownable.sol"
+import "./Ownable.sol";
 
 contract Loterie2 is Ownable {
 
@@ -52,7 +52,7 @@ contract Loterie2 is Ownable {
 
   }
 
-  function get_lottery_participants(uint index) public view returns(address[], uint[]) {
+  function get_lottery_participants(uint index) public view returns(address[] memory, uint[] memory) {
 
   }
 
@@ -76,11 +76,11 @@ contract Loterie2 is Ownable {
     return lotteries.length;
   }
 
-  function get_lotteries() public view returns(Lottery[]) {
+  function get_lotteries() public view returns(Lottery[] memory) {
     return lotteries;
   }
 
-  function withdraw() isOwner {
+  function withdraw() public isOwner {
     payable(owner).transfer(address(this).balance);
   }
 }
