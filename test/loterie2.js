@@ -16,19 +16,21 @@ const advanceBlock = () => {
    });
 }
 
+
 contract("Loterie2", accounts => {
+
+  const eth1 = web3.utils.toWei("1", 'ether');
+  const eth2 = web3.utils.toWei("1", 'ether');
 
   before('Setup contract', async () => {
       contract = await Loterie2.deployed()
   });
 
   it('Creating a lottery should emit an event', async () => {
-    await advanceBlock()
-    let current_block = (await web3.eth.getBlock("latest")).number
-    let eth = web3.utils.toWei("1", 'ether');
-    let receipt = await contract.create_lottery(eth, 20, {from: accounts[0]})
 
-    let l = receipt.logs[0];
+    const receipt = await contract.create_lottery(eth1, eth2, 20, {from: accounts[0]})
+
+    const l = receipt.logs[0];
     assert.equal(l.event, 'LotteryCreated');
     assert.equal(l.args.index, 0);
   });

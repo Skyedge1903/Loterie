@@ -37,9 +37,9 @@ contract Loterie2 is Ownable {
   }
 
   function participate(uint index) public payable {
-    require(is_index_valid(index), "you have entered a wrong index");
-    require(is_lottery_playable(index), "the game is over");
-    require(is_not_exceeding_tolerence(index, msg.value), "you cannot exceed the overrun tolerance");
+    require(is_index_valid(index), "Incorrect index passed");
+    require(is_lottery_playable(index), "This lottery is closed");
+    require(is_not_exceeding_tolerence(index, msg.value), "Overrun tolerance exceeded");
     lotteries[index].addrs.push(msg.sender);
     lotteries[index].amounts.push(msg.value);
     lotteries[index].total_amount += msg.value;
@@ -49,8 +49,8 @@ contract Loterie2 is Ownable {
   }
 
   function withdraw_gains(uint index) public {
-    require(is_index_valid(index), "you have entered a wrong index");
-    require(is_lottery_withdrawable(index), "this lottery is not whithdrawable now");
+    require(is_index_valid(index), "Incorrect index passed");
+    require(is_lottery_withdrawable(index), "This lottery is closed");
 
     uint winner_wei = uint(blockhash(lotteries[index].lock_block + 2)) % lotteries[index].total_amount;
     uint current_wei = 0;
@@ -110,8 +110,8 @@ contract Loterie2 is Ownable {
   }
 
   function get_winner(uint index) public view returns(address) {
-    require(is_index_valid(index), "you have entered a wrong index");
-    require(is_lottery_withdrawable(index), "this lottery is not whithdrawable now");
+    require(is_index_valid(index), "Incorrect index passed");
+    require(is_lottery_withdrawable(index), "Lottery not currently withdrawable");
     
     uint winner_wei = uint(blockhash(lotteries[index].lock_block + 2)) % lotteries[index].total_amount;
     uint current_wei = 0;
@@ -149,6 +149,7 @@ contract Loterie2 is Ownable {
     return lotteries;
   }
 
+  // This function is just here to showcase ownership.
   function withdraw() public isOwner {
     payable(owner).transfer(address(this).balance);
   }
