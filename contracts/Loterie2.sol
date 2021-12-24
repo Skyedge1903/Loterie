@@ -24,6 +24,7 @@ contract Loterie2 is Ownable {
   );
 
   function create_lottery(uint max_amount, uint exceeding_tolerance, uint duration_in_blocks) public {
+    require(duration_in_blocks > 9, "The lottery has to last at least 10 blocks");
     Lottery memory l;
     l.total_amount = 0;
     l.max_amount = max_amount;

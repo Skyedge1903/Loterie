@@ -43,4 +43,15 @@ contract("Loterie2", accounts => {
     assert.equal(l.args.index, 1);
   });
 
+  it('Creating a lottery with less than 10 blocks should fail', async () => {
+    let err = null;
+    try {
+      await contract.create_lottery(gwei2, gwei1, 1, {from: accounts[0]})
+    }
+    catch (error){
+      err = error;
+    }
+    assert.ok(err instanceof Error)
+  });
+
 });
