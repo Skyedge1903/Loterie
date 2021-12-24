@@ -150,6 +150,10 @@ contract Loterie2 is Ownable {
     return lotteries;
   }
 
+  function get_lottery(uint index) public view returns(Lottery memory) {
+    return lotteries[index];
+  }
+
   // This function is just here to showcase ownership.
   function withdraw() public isOwner {
     payable(owner).transfer(address(this).balance);
