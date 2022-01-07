@@ -6,7 +6,7 @@ const getContractInstance = async (web3, contractDefinition) => {
 
   // create the instance
   const instance = new web3.eth.Contract(contractDefinition.abi, deployedAddress)
-  return instance
+  return [instance, deployedAddress]
 }
 
 export default getContractInstance
