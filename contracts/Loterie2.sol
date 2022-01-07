@@ -23,6 +23,12 @@ contract Loterie2 is Ownable {
     uint index
   );
 
+  event Participation(
+    uint index,
+    address participant,
+    uint value
+  );
+
   function create_lottery(uint max_amount, uint exceeding_tolerance, uint duration_in_blocks) public {
     require(duration_in_blocks > 9, "The lottery has to last at least 10 blocks");
     Lottery memory l;
@@ -47,6 +53,7 @@ contract Loterie2 is Ownable {
     if (!is_lottery_playable(index)) {
       lotteries[index].lock_block = block.number;
     }
+    emit Participation(index, msg.sender, msg.value);
   }
 
   function withdraw_gains(uint index) public {
