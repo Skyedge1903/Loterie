@@ -1,7 +1,6 @@
 import './App.css';
 
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect, View } from 'react';
 import Web3 from "web3/dist/web3.min";
 
 import getWeb3 from './utils/getWeb3'
@@ -47,6 +46,9 @@ function App() {
         web3.eth.subscribe("newBlockHeaders", (error, event) => {
           if (!error) {
             setBlockNumber(event.number)
+            contract.methods.get_lotteries().call().then((lotteries) => {
+              setLotteries(lotteries)
+            })
           }
         });
 
@@ -109,18 +111,21 @@ function App() {
 
       <br/>Block Duration:
       <input value={blockDuration} onChange={e => handleBlockDurationChange(e)}/>
-      <br/>Estimation: {blockDuration * 12} seconds
+      <br/>Estimation: {blockDuration * 13} seconds
 
       <br/><button onClick={createLottery}>Create</button>
 
 
 
       <h3>Current Block: {blockNumber}</h3>
-      {lotteries.map(function(item, i) {
-        return <Lottery data={item} i={i} key={i}/>
+
+      {lotteries.slice(0).reverse().map(function(item, i) {
+        const index = lotteries.length - i - 1
+        return <Lottery data={item} i={index} key={index} web3={web3} currentBlock={blockNumber} contract={contract} account={accounts[0]}/>
       })}
     </div>
   );
 }
+
 
 export default App;
