@@ -1,22 +1,21 @@
 import './App.css';
 
-import React, { useState, useEffect, View } from 'react';
-import Web3 from "web3/dist/web3.min";
+import React, { useState, useEffect } from 'react';
 
 import getWeb3 from './utils/getWeb3'
 import getContractInstance from './utils/getContractInstance'
 import ContractData from "./contracts/Loterie2.json";
 import Lottery from "./lottery"
-import web3Min from 'web3/dist/web3.min';
 
 function App() {
   const [blockNumber, setBlockNumber] = useState(undefined);
   const [contract, setContract] = useState(null)
+  const [contractAddress, setContractAddress] = useState(null)
   const [accounts, setAccounts] = useState([])
   const [web3, setWeb3] = useState(null)
   const [lotteries, setLotteries] = useState([])
-
-
+  const [contractBalance, setContractBalance] = useState('unknown');
+  const [playerBalance, setPlayerBalance] = useState('unknown')
 
   const [maxAmount, setMaxAmount] = useState(0.001)
   const [tolerance, setTolerance] = useState(0.001)
@@ -28,10 +27,26 @@ function App() {
       try {
         const web3 = await getWeb3()
         const accounts = await web3.eth.getAccounts()
-        const contract = await getContractInstance(web3, ContractData)
+        const contractAndAddress = await getContractInstance(web3, ContractData)
+        const contract = contractAndAddress[0]
+        const address = contractAndAddress[1]
+
         setWeb3(web3)
         setAccounts(accounts)
         setContract(contract)
+        setContractAddress(address)
+
+        function updateContractBalance() {
+          web3.eth.getBalance(address).then(result => {
+            setContractBalance(result.toString())
+          })
+        }
+
+        function updatePlayerBalance() {
+          web3.eth.getBalance(accounts[0]).then(result => {
+            setPlayerBalance(result.toString())
+          })
+        }
 
          const updateLotteries = () => {
            contract.methods.get_lotteries().call().then((lotteries) => {
@@ -43,12 +58,18 @@ function App() {
           setBlockNumber(bn);
         });
 
+        updateContractBalance()
+        updatePlayerBalance()
+
         web3.eth.subscribe("newBlockHeaders", (error, event) => {
           if (!error) {
             setBlockNumber(event.number)
             contract.methods.get_lotteries().call().then((lotteries) => {
               setLotteries(lotteries)
             })
+
+            updateContractBalance()
+            updatePlayerBalance()
           }
         });
 
@@ -116,8 +137,9 @@ function App() {
       <br/><button onClick={createLottery}>Create</button>
 
 
-
       <h3>Current Block: {blockNumber}</h3>
+      <div>Contract's balance = {contractBalance}</div>
+      <div>Player's balance = {playerBalance}</div>
 
       {lotteries.slice(0).reverse().map(function(item, i) {
         const index = lotteries.length - i - 1
