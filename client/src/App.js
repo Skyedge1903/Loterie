@@ -6,6 +6,7 @@ import getWeb3 from './utils/getWeb3'
 import getContractInstance from './utils/getContractInstance'
 import ContractData from "./contracts/Loterie2.json";
 import Lottery from "./lottery"
+import { TextField, InputAdornment, Button, Divider} from '@material-ui/core';
 
 function App() {
   const [blockNumber, setBlockNumber] = useState(undefined);
@@ -21,7 +22,6 @@ function App() {
   const [tolerance, setTolerance] = useState(0.001)
   const [blockDuration, setBlockDuration] = useState(10)
 
-
   useEffect(() => {
     async function setUpWeb3() {
       try {
@@ -31,20 +31,25 @@ function App() {
         const contract = contractAndAddress[0]
         const address = contractAndAddress[1]
 
+        console.log("Contract's address = ", address)
+        console.log(contract)
+
         setWeb3(web3)
         setAccounts(accounts)
         setContract(contract)
         setContractAddress(address)
 
+
+
         function updateContractBalance() {
           web3.eth.getBalance(address).then(result => {
-            setContractBalance(result.toString())
+            setContractBalance(web3.utils.fromWei(result, "ether").toString())
           })
         }
 
         function updatePlayerBalance() {
           web3.eth.getBalance(accounts[0]).then(result => {
-            setPlayerBalance(result.toString())
+            setPlayerBalance(web3.utils.fromWei(result, "ether").toString())
           })
         }
 
@@ -75,7 +80,6 @@ function App() {
 
         updateLotteries()
       } catch (error) {
-        alert("Failed to load web3, accounts, or contract. Check console for details.")
         console.log(error)
       }
     }
@@ -124,23 +128,63 @@ function App() {
   return (
     <div>
       <h3>Create Lottery</h3>
-      <br/>Max Amount:
-      <input value={maxAmount} onChange={e => handleMaxAmountChange(e)}/>
 
-      <br/>Tolerance:
-      <input value={tolerance} onChange={e => handleToleranceChange(e)}/>
+      <TextField
+        id="maxAmountField"
+        label="Max Amount"
+        variant="outlined"
+        value={maxAmount}
+        onChange={e => handleMaxAmountChange(e)}
+        inputProps={{
+          style: {
+            padding: 10,
+          }
+        }}
+      />
 
-      <br/>Block Duration:
-      <input value={blockDuration} onChange={e => handleBlockDurationChange(e)}/>
-      <br/>Estimation: {blockDuration * 13} seconds
+      <TextField
+        id="toleranceField"
+        label="Tolerance"
+        variant="outlined"
+        value={tolerance}
+        onChange={e => handleToleranceChange(e)}
+        inputProps={{
+          style: {
+            padding: 10,
+          }
+        }}
+      />
 
-      <br/><button onClick={createLottery}>Create</button>
+      <TextField
+        id="blockDurationField"
+        label="Block Duration"
+        variant="outlined"
+        value={blockDuration}
+        onChange={e => handleBlockDurationChange(e)}
+        inputProps={{
+          style: {
+            padding: 10,
+          }
+        }}
+      />
 
+      <Button
+        variant="contained"
+        onClick={createLottery}
+        inputProps={{
+          style: {
+            padding: 10,
+          }
+        }}
+      >
+        Create Lottery
+      </Button>
 
-      <h3>Current Block: {blockNumber}</h3>
-      <div>Contract's balance = {contractBalance}</div>
-      <div>Player's balance = {playerBalance}</div>
-
+      <h3>Data</h3>
+      <div>Current Block: {blockNumber}</div>
+      <div>Contract's balance = {contractBalance} eth</div>
+      <div>Player's balance = {playerBalance} eth</div>
+      <br/>
       {lotteries.slice(0).reverse().map(function(item, i) {
         const index = lotteries.length - i - 1
         return <Lottery data={item} i={index} key={index} web3={web3} currentBlock={blockNumber} contract={contract} account={accounts[0]}/>
