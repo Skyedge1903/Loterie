@@ -6,17 +6,20 @@ import getWeb3 from './utils/getWeb3'
 import getContractInstance from './utils/getContractInstance'
 import ContractData from "./contracts/Loterie2.json";
 import Lottery from "./lottery"
-import { TextField, InputAdornment, Button, Divider} from '@material-ui/core';
+import { TextField, Button, Select, InputLabel, MenuItem, Text} from '@material-ui/core';
 
 function App() {
   const [blockNumber, setBlockNumber] = useState(undefined);
   const [contract, setContract] = useState(null)
   const [contractAddress, setContractAddress] = useState(null)
   const [accounts, setAccounts] = useState([])
+  const [currentAccountIndex, setCurrentAccountIndex] = useState(0)
+  const [currentAccountBalance, setCurrentAccountBalance] = useState(0)
+  const [currentAccount, setCurrentAccount] = useState(null)
   const [web3, setWeb3] = useState(null)
   const [lotteries, setLotteries] = useState([])
   const [contractBalance, setContractBalance] = useState('unknown');
-  const [playerBalance, setPlayerBalance] = useState('unknown')
+  const [playerBalances, setPlayerBalances] = useState([])
 
   const [maxAmount, setMaxAmount] = useState(0.001)
   const [tolerance, setTolerance] = useState(0.001)
@@ -38,8 +41,7 @@ function App() {
         setAccounts(accounts)
         setContract(contract)
         setContractAddress(address)
-
-
+        setCurrentAccount(accounts[0])
 
         function updateContractBalance() {
           web3.eth.getBalance(address).then(result => {
@@ -47,9 +49,13 @@ function App() {
           })
         }
 
-        function updatePlayerBalance() {
-          web3.eth.getBalance(accounts[0]).then(result => {
-            setPlayerBalance(web3.utils.fromWei(result, "ether").toString())
+        function updatePlayerBalances(accounts) {
+          const promises = accounts.map((account, i) => {
+           return web3.eth.getBalance(account)
+          })
+
+          Promise.all(promises).then((balances) => {
+            setPlayerBalances(balances)
           })
         }
 
@@ -64,7 +70,7 @@ function App() {
         });
 
         updateContractBalance()
-        updatePlayerBalance()
+        updatePlayerBalances(accounts)
 
         web3.eth.subscribe("newBlockHeaders", (error, event) => {
           if (!error) {
@@ -74,7 +80,7 @@ function App() {
             })
 
             updateContractBalance()
-            updatePlayerBalance()
+            updatePlayerBalances(accounts)
           }
         });
 
@@ -113,12 +119,31 @@ function App() {
     setBlockDuration(value)
   }
 
+  function handleCurrentAccountChange(e) {
+    const index = accounts.indexOf(e.target.value);
+    setCurrentAccountIndex(index)
+    setCurrentAccount(e.target.value)
+
+    const promises = accounts.map((account, i) => {
+      return web3.eth.getBalance(account)
+    })
+
+    Promise.all(promises).then((balances) => {
+      setPlayerBalances(balances)
+      setCurrentAccountBalance(balances[index])
+    })
+  }
+
+  useEffect(() => {
+    setCurrentAccountBalance(playerBalances[currentAccountIndex])
+  }, [playerBalances, currentAccountIndex])
+
   function createLottery() {
     let max = web3.utils.toWei(maxAmount.toString(), "ether")
     let tol = web3.utils.toWei(tolerance.toString(), "ether")
 
     // This call should take 112 299 gas
-    contract.methods.create_lottery(max, tol, blockDuration).send({from: accounts[0], gas: 150000}).then(() => {
+    contract.methods.create_lottery(max, tol, blockDuration).send({from: currentAccount, gas: 150000}).then(() => {
       contract.methods.get_lotteries().call().then((lotteries) => {
         setLotteries(lotteries)
       })
@@ -127,6 +152,23 @@ function App() {
 
   return (
     <div>
+      <br/>
+      <InputLabel id="selectAccountLabel">Account</InputLabel>
+      <Select
+        labelId="selectAccountLabel"
+        id="selectAccount"
+        value={currentAccount}
+        label="Account"
+        onChange={handleCurrentAccountChange}
+      >
+        {accounts.map((account, i) => {
+          return <MenuItem id={i} value={account.toString()}>{account}</MenuItem>
+        })}
+      </Select>
+
+      <div>Balance: {currentAccountBalance}</div>
+
+
       <h3>Create Lottery</h3>
 
       <TextField
@@ -183,11 +225,18 @@ function App() {
       <h3>Data</h3>
       <div>Current Block: {blockNumber}</div>
       <div>Contract's balance = {contractBalance} eth</div>
-      <div>Player's balance = {playerBalance} eth</div>
       <br/>
       {lotteries.slice(0).reverse().map(function(item, i) {
         const index = lotteries.length - i - 1
-        return <Lottery data={item} i={index} key={index} web3={web3} currentBlock={blockNumber} contract={contract} account={accounts[0]}/>
+        return <Lottery
+                 data={item}
+                 i={index}
+                 key={index}
+                 web3={web3}
+                 currentBlock={blockNumber}
+                 contract={contract}
+                 account={currentAccount}
+               />
       })}
     </div>
   );
