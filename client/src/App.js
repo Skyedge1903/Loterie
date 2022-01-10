@@ -135,7 +135,7 @@ function App() {
   }
 
   useEffect(() => {
-    setCurrentAccountBalance(playerBalances[currentAccountIndex])
+    setCurrentAccountBalance(web3.utils.fromWei(playerBalances[currentAccountIndex], 'ether'))
   }, [playerBalances, currentAccountIndex])
 
   function createLottery() {
@@ -166,8 +166,7 @@ function App() {
         })}
       </Select>
 
-      <div>Balance: {currentAccountBalance}</div>
-
+      <div>Balance: {currentAccountBalance} eth</div>
 
       <h3>Create Lottery</h3>
 
