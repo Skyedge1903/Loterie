@@ -60,11 +60,11 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
   }, [])
 
 
-
   const participate = () => {
     // 146 809 gas au premier call sur la lottery
     // 101 809 gas au calls suivant
     let eth = web3.utils.toWei(amount.toString(), "ether")
+    console.log("participating with", account)
     contract.methods.participate(i).send({from: account, gas: 150000, value: eth })
   }
 
