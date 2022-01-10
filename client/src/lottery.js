@@ -1,5 +1,16 @@
-import getWeb3 from "./utils/getWeb3";
 import { useEffect, useState } from 'react'
+import Participants from "./participants"
+import { Accordion, AccordionSummary, TextField, Button} from '@material-ui/core';
+import { DataGrid } from '@mui/x-data-grid';
+
+const columns: GridColDef[] = [
+  { field: 'current', headerName: 'Current Amount (Eth)', width: 200 },
+  { field: 'max', headerName: 'Max Amount (Eth)', width: 200 },
+  { field: 'tolerance', headerName: 'Tolerance', width: 200 },
+  { field: 'lockBlock', headerName: 'Lock Block', width: 200 },
+  { field: 'status', headerName: 'Status', width: 200 },
+  { field: 'winner', headerName: "Winner's address", width: 400 },
+];
 
 function Lottery({ data, i, web3, currentBlock, contract, account }) {
 
@@ -18,17 +29,9 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
     return !data.is_dropped
   }
 
-  const won = () => {
-    return winner === account
-  }
-
   const status = () => {
     if (is_over()) {
-      if(won()) {
-        return "Won"
-      } else {
-        return "Lost"
-      }
+      return "over"
     } else {
       return ((data.lock_block - currentBlock) * 13).toString() + " seconds"
     }
@@ -74,25 +77,79 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
     contract.methods.withdraw_gains(i).send({from: account, gas: 200000})
   }
 
-  return (
-    <div>
-    <h2>Lottery number {i}</h2>
-    <input value={amount} onChange={e => handleAmountChange(e)}/>
-    <button onClick={participate}>Participate</button>
+  const row = [{
+    id: 1,
+    current: toEth(data.total_amount),
+    max: toEth(data.max_amount),
+    tolerance: toEth(data.exceeding_tolerance),
+    lockBlock: data.lock_block,
+    status: status(),
+    winner: winner
+  }]
 
-    <p>Current Amount = {toEth(data.total_amount)} eth </p>
-    <p>Remaining</p>
-    <p>Max amount = {toEth(data.max_amount)} eth</p>
-    <p>Tolerance = {toEth(data.exceeding_tolerance)} eth</p>
-    <p>Lock block = {data.lock_block}</p>
-    <p>Status = {status()}</p>
-    <p>Winner = {winner}</p>
-    <button disabled={!(account===winner && can_withdraw())} onClick={withdraw}>Withdraw</button>
-    <h4>Participants:</h4>
-      {data.addrs.map(function(addr, j) {
-        return <p key={j}> {addr} : {toEth(data.amounts[j])} eth</p>
-      })}
-    </div>
+  console.log(row)
+
+  return (
+    <Accordion>
+      <AccordionSummary>
+      Lottery number {i}
+      </AccordionSummary>
+
+
+      <TextField
+        id="amountField"
+        label="Amount"
+        variant="outlined"
+        value={amount}
+        onChange={e => handleAmountChange(e)}
+        inputProps={{
+          style: {
+            padding: 10,
+          }
+        }}
+      />
+
+      <Button
+        variant="contained"
+        onClick={participate}
+        inputProps={{
+          style: {
+            padding: 10,
+          }
+        }}
+      >
+        Participate
+      </Button>
+
+      <Button
+        variant="contained"
+        onClick={withdraw}
+        disabled={!(account===winner && can_withdraw())}
+        inputProps={{
+          style: {
+            padding: 10,
+          }
+        }}
+      >
+        Withdraw
+      </Button>
+
+      <div style={{ height: 110, width: '100%' }}>
+        <DataGrid
+          hideFooter={true}
+          rows={row}
+          columns={columns}
+          rowsPerPageOptions={[]}
+        />
+      </div>
+
+      <Accordion>
+        <AccordionSummary>
+        Participants
+        </AccordionSummary>
+        <Participants data={data} web3={web3}/>
+      </Accordion>
+    </Accordion>
   );
 }
 
