@@ -80,12 +80,7 @@ contract Loterie2 is Ownable {
     else if (index >= get_lottery_count()){
       return false;
     }
-    else if (lotteries[index].is_dropped){
-      return false;
-    }
-    else {
-      return true;
-    }
+    return true;
   }
 
   function is_lottery_playable(uint index) public view returns(bool){

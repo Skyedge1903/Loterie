@@ -44,14 +44,16 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
     if (is_over()){
       contract.methods.get_winner(i).call({from: account}).then((addr) => {
         setWinner(addr)
-      })
+      }).catch((error) => {})
     }
 
     web3.eth.subscribe("newBlockHeaders", (error, event) => {
       if (!error) {
         contract.methods.get_winner(i).call({from: account}).then((addr) => {
           setWinner(addr)
-        })
+        }).catch((error) => {
+          console.log(error)
+        });
       }
     });
 
