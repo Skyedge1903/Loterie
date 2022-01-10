@@ -22,7 +22,10 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
   }
 
   const is_over = () => {
-    return (currentBlock >= data.lock_block || data.max_amount < data.total_amount)
+    const lockBlock = parseInt(data.lock_block, 10)
+    const max = parseInt(data.max_amount, 10)
+    const total = parseInt(data.total_amount, 10)
+    return (currentBlock >= lockBlock || max < total)
   }
 
   const can_withdraw = () => {
@@ -86,8 +89,6 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
     status: status(),
     winner: winner
   }]
-
-  console.log(row)
 
   return (
     <Accordion>
