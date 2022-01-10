@@ -29,17 +29,9 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
     return !data.is_dropped
   }
 
-  const won = () => {
-    return winner === account
-  }
-
   const status = () => {
     if (is_over()) {
-      if(won()) {
-        return "Won"
-      } else {
-        return "Lost"
-      }
+      return "over"
     } else {
       return ((data.lock_block - currentBlock) * 13).toString() + " seconds"
     }
