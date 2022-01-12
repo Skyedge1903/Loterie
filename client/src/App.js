@@ -9,7 +9,7 @@ import Lottery from "./lottery"
 import { TextField, Button, Select, InputLabel, MenuItem, Text} from '@material-ui/core';
 
 function App() {
-  const [blockNumber, setBlockNumber] = useState(undefined);
+  const [blockNumber, setBlockNumber] = useState(null);
   const [contract, setContract] = useState(null)
   const [contractAddress, setContractAddress] = useState(null)
   const [accounts, setAccounts] = useState([])
@@ -135,8 +135,9 @@ function App() {
   }
 
   useEffect(() => {
-    setCurrentAccountBalance(web3.utils.fromWei(playerBalances[currentAccountIndex], 'ether'))
-  }, [playerBalances, currentAccountIndex])
+    if(playerBalances.length != 0 && web3 != null)
+      setCurrentAccountBalance(web3.utils.fromWei(playerBalances[currentAccountIndex]), 'ether')
+  }, [playerBalances, currentAccountIndex, web3])
 
   function createLottery() {
     let max = web3.utils.toWei(maxAmount.toString(), "ether")
