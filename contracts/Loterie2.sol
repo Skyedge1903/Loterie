@@ -116,7 +116,7 @@ contract Loterie2 is Ownable {
     require(is_index_valid(index), "Incorrect index passed");
     require(is_lottery_withdrawable(index), "Lottery not currently withdrawable");
     
-    uint winner_wei = uint(blockhash(lotteries[index].lock_block + 2)) % lotteries[index].total_amount;
+    uint winner_wei = uint(blockhash(lotteries[index].lock_block + 1)) % lotteries[index].total_amount;
     uint current_wei = 0;
 
     for (uint i = 0; i < lotteries[index].addrs.length; i++){

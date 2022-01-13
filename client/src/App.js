@@ -135,7 +135,7 @@ function App() {
   }
 
   useEffect(() => {
-    if(playerBalances.length != 0 && web3 != null)
+    if(playerBalances.length !== 0 && web3 != null)
       setCurrentAccountBalance(web3.utils.fromWei(playerBalances[currentAccountIndex]), 'ether')
   }, [playerBalances, currentAccountIndex, web3])
 
