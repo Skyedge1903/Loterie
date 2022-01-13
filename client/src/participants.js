@@ -3,8 +3,8 @@ import { DataGrid } from '@mui/x-data-grid';
 
 
 const columns: GridColDef[] = [
-  { field: 'address', headerName: 'Address', width: 700 },
-  { field: 'amount', headerName: 'Amount (Eth)', width: 300 },
+  { field: 'address', headerName: 'Address', width: 400 },
+  { field: 'amount', headerName: 'Amount (Eth)', width: 160 },
 ];
 
 export default function Participants({ data, web3 }) {

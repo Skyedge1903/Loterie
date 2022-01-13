@@ -4,12 +4,12 @@ import { Accordion, AccordionSummary, TextField, Button} from '@material-ui/core
 import { DataGrid } from '@mui/x-data-grid';
 
 const columns: GridColDef[] = [
-  { field: 'current', headerName: 'Current Amount (Eth)', width: 200 },
-  { field: 'max', headerName: 'Max Amount (Eth)', width: 200 },
-  { field: 'tolerance', headerName: 'Tolerance', width: 200 },
-  { field: 'lockBlock', headerName: 'Lock Block', width: 200 },
-  { field: 'status', headerName: 'Status', width: 200 },
-  { field: 'winner', headerName: "Winner's address", width: 400 },
+  { field: 'current', headerName: 'Amount (Eth)', width: 125 },
+  { field: 'max', headerName: 'Max (Eth)', width: 125 },
+  { field: 'tolerance', headerName: 'Tolerance', width: 100 },
+  { field: 'lockBlock', headerName: 'Lock Block', width: 100 },
+  { field: 'status', headerName: 'Status', width: 100 },
+  { field: 'winner', headerName: "Winner's address", width: 375 },
 ];
 
 function Lottery({ data, i, web3, currentBlock, contract, account }) {
@@ -52,7 +52,7 @@ function Lottery({ data, i, web3, currentBlock, contract, account }) {
         contract.methods.get_winner(i).call({from: account}).then((addr) => {
           setWinner(addr)
         }).catch((error) => {
-          console.log(error)
+          // console.log(error)
         });
       }
     });
