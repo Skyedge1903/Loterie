@@ -2,8 +2,6 @@
 
 Porté par Quentin Dewaghe, Joris Placette , Clément Girard 
 
-[Trello](https://trello.com/b/vxREy2ZX/pr-ethereum)
-
 Notre projet consiste à créer un **Token ERC20** ainsi qu'un **smart contract** de lotterie sur ce token, le tout sur un reseau de test de la **blockchain** **Ethereum**.
 
 ## Notions préalables
